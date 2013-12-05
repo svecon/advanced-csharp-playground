@@ -277,6 +277,39 @@ namespace ExpressionEvaluator {
         }
     }
 
+    class GenericVisitor<T> : IVisitor<T> {
+
+        public T Visit(ConstantExpression exp)
+        {
+            return (dynamic)exp.Value;
+        }
+
+        public T Visit(UnaryMinusExpression exp)
+        {
+            return checked((-1) * (dynamic)exp.Op.Accept(this));
+        }
+
+        public T Visit(PlusExpression exp)
+        {
+            return checked((dynamic)exp.Op0.Accept(this) + exp.Op1.Accept(this));
+        }
+
+        public T Visit(MinusExpression exp)
+        {
+            return checked((dynamic)exp.Op0.Accept(this) - exp.Op1.Accept(this));
+        }
+
+        public T Visit(MultiplyExpression exp)
+        {
+            return checked((dynamic)exp.Op0.Accept(this) * exp.Op1.Accept(this));
+        }
+
+        public T Visit(DivideExpression exp)
+        {
+            return checked((dynamic)exp.Op0.Accept(this) / exp.Op1.Accept(this));
+        }
+    }
+
     class Program {
         static void Main(string[] args)
         {
@@ -323,7 +356,7 @@ namespace ExpressionEvaluator {
 
                         if (expr == null) { Console.WriteLine("Expression Missing"); continue; }
 
-                        var visitorDouble = new DoubleVisitor();
+                        var visitorDouble = new GenericVisitor<double>();
 
                         Console.WriteLine(String.Format("{0:F5}", expr.Accept<double>(visitorDouble)));
                         continue;
