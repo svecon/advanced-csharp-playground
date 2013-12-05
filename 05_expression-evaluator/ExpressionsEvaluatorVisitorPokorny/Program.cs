@@ -304,6 +304,37 @@ namespace Vyrazy {
         }
     };
 
+    public class AbstractEvaluator<T> : NodeVisitor<T> {
+
+        private T BinaryMap(BinaryNode node, Func<T, T, T> func)
+        {
+            try
+            {
+                T left = node.LeftChild.Accept(this), right = node.RightChild.Accept(this);
+                return func(left, right);
+            }
+            catch (OverflowException)
+            {
+                throw new OverflowError();
+            }
+        }
+
+        public T Visit(ConstantNode constantNode) { return (dynamic)constantNode.Value; }
+        public T Visit(PlusNode node) { return BinaryMap(node, (a, b) => checked((dynamic)a + (dynamic)b)); }
+        public T Visit(MinusNode node) { return BinaryMap(node, (a, b) => checked((dynamic)a - (dynamic)b)); }
+        public T Visit(MultiplyNode node) { return BinaryMap(node, (a, b) => checked((dynamic)a * (dynamic)b)); }
+        public T Visit(DivideNode node)
+        {
+            return BinaryMap(node, (a, b) =>
+            {
+                if ((dynamic)b == 0) throw new DivideError();
+                return checked((dynamic)a / (dynamic)b);
+            });
+        }
+        public T Visit(UnaryMinusNode node) { return (dynamic)node.Child.Accept(this) * (-1); }
+    
+    }
+
     public class IntEvaluator : NodeVisitor<int> {
         private int BinaryMap(BinaryNode node, Func<int, int, int> func)
         {
@@ -377,10 +408,10 @@ namespace Vyrazy {
         {
             if (input == "") return null;
 
-            if (input == "i") return RunVisitor(new IntEvaluator(), a => a.ToString());
+            if (input == "i") return RunVisitor(new AbstractEvaluator<int>(), a => a.ToString());
             if (input == "d")
             {
-                return RunVisitor(new DoubleEvaluator(), a => String.Format("{0:F5}", a));
+                return RunVisitor(new AbstractEvaluator<double>(), a => String.Format("{0:F5}", a));
             }
 
             NodeParser parser = NodeParser.BuildDefault();
