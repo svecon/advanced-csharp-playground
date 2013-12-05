@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GateNetwork", "GateNetwork\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GateNetworkTests", "GateNetworkTests\GateNetworkTests.csproj", "{9A15BBC9-CDA0-43A7-985C-D3ACBE310EE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GateNetworkPokorny", "GateNetworkPokorny\GateNetworkPokorny.csproj", "{70CC7FEB-1EA0-4705-A435-0EF973C7EA18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9A15BBC9-CDA0-43A7-985C-D3ACBE310EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A15BBC9-CDA0-43A7-985C-D3ACBE310EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A15BBC9-CDA0-43A7-985C-D3ACBE310EE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70CC7FEB-1EA0-4705-A435-0EF973C7EA18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70CC7FEB-1EA0-4705-A435-0EF973C7EA18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70CC7FEB-1EA0-4705-A435-0EF973C7EA18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70CC7FEB-1EA0-4705-A435-0EF973C7EA18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,10 +49,12 @@ namespace GateNetworkTests {
         [TestMethod]
         public void LineParser_CustomSeparators()
         {
-            var input = "ahoj->helloendhi";
+            var input = "ahoj->hello endhi";
             var expected = new[] { "ahoj", "->", "hello", "end", "hi" };
             var parser = new LineParser(new StringReader(input));
-            parser.AddSeparator("->", false).AddSeparator("end", false);
+            parser
+                .AddSeparator("->", false)
+                .AddSeparator("end", false);
 
             checkResult(input, expected, parser);
         }

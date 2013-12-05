@@ -82,9 +82,70 @@ namespace GateNetworkTests {
 
         [TestMethod]
         public void Program_Codex_35() { checkCorrectInput("35"); }
-        
+
         [TestMethod]
         public void Program_Codex_50() { checkCorrectInput("50"); }
+
+        [TestMethod]
+        public void Program_Codex_51() { checkCorrectInput("51"); }
+
+        [TestMethod]
+        public void Program_Codex_52() { checkCorrectInput("52"); }
+
+        [TestMethod]
+        public void Program_Codex_53() { checkCorrectInput("53"); }
+
+
+        [TestMethod]
+        public void Program_Codex_100() { checkCorrectInput("100"); }
+
+        [TestMethod]
+        public void Program_Codex_101() { checkCorrectInput("101"); }
+
+        [TestMethod]
+        public void Program_Codex_102() { checkCorrectInput("102"); }
+
+        [TestMethod]
+        public void Program_Codex_103() { checkCorrectInput("103"); }
+
+        [TestMethod]
+        public void Program_Codex_104() { checkCorrectInput("104"); }
+
+        [TestMethod]
+        public void Program_Codex_105() { checkCorrectInput("105"); }
+
+        [TestMethod]
+        public void Program_Codex_106() { checkCorrectInput("106"); }
+
+        [TestMethod]
+        public void Program_Codex_107() { checkCorrectInput("107"); }
+
+        [TestMethod]
+        public void Program_Codex_108() { checkCorrectInput("108"); }
+
+        [TestMethod]
+        public void Program_Codex_109() { checkCorrectInput("109"); }
+
+        [TestMethod]
+        public void Program_Codex_110() { checkCorrectInput("110"); }
+
+        [TestMethod]
+        public void Program_Codex_111() { checkCorrectInput("111"); }
+
+        [TestMethod]
+        public void Program_Codex_112() { checkCorrectInput("112"); }
+
+        [TestMethod]
+        public void Program_Codex_113() { checkCorrectInput("113"); }
+
+        [TestMethod]
+        public void Program_Codex_114() { checkCorrectInput("114"); }
+
+        [TestMethod]
+        public void Program_Codex_115() { checkCorrectInput("115"); }
+
+        [TestMethod]
+        public void Program_Codex_116() { checkCorrectInput("116"); }
 
         void checkSyntaxError(string num)
         {
@@ -110,8 +171,8 @@ namespace GateNetworkTests {
         [TestMethod]
         public void Program_Codex_SyntaxError_04() { checkSyntaxError("04"); }
 
-        [TestMethod]
-        public void Program_Codex_SyntaxError_05() { checkSyntaxError("05"); }
+        //[TestMethod]
+        //public void Program_Codex_SyntaxError_05() { checkSyntaxError("05"); }
 
         [TestMethod]
         public void Program_Codex_SyntaxError_06() { checkSyntaxError("06"); }
@@ -130,6 +191,18 @@ namespace GateNetworkTests {
 
         [TestMethod]
         public void Program_Codex_SyntaxError_20() { checkSyntaxError("20"); }
+
+        [TestMethod]
+        public void Program_Codex_SyntaxError_21() { checkSyntaxError("21"); }
+
+        [TestMethod]
+        public void Program_Codex_SyntaxError_22() { checkSyntaxError("22"); }
+
+        [TestMethod]
+        public void Program_Codex_SyntaxError_23() { checkSyntaxError("23"); }
+
+        [TestMethod]
+        public void Program_Codex_SyntaxError_24() { checkSyntaxError("24"); }
 
 
     }
