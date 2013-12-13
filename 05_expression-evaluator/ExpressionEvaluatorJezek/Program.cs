@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace ExpressionEvaluator {
@@ -277,36 +278,145 @@ namespace ExpressionEvaluator {
         }
     }
 
-    class GenericVisitor<T> : IVisitor<T> {
+    class ParenthesesVisitor : IVisitor<string> {
 
-        public T Visit(ConstantExpression exp)
+        public string Visit(ConstantExpression exp)
         {
-            return (dynamic)exp.Value;
+            return exp.Value.ToString();
         }
 
-        public T Visit(UnaryMinusExpression exp)
+        public string Visit(UnaryMinusExpression exp)
         {
-            return checked((-1) * (dynamic)exp.Op.Accept(this));
+            return "(-" + exp.Op.Accept(this) + ")";
         }
 
-        public T Visit(PlusExpression exp)
+        public string Visit(PlusExpression exp)
         {
-            return checked((dynamic)exp.Op0.Accept(this) + exp.Op1.Accept(this));
+            return "(" + exp.Op0.Accept(this) + "+" + exp.Op1.Accept(this) + ")";
         }
 
-        public T Visit(MinusExpression exp)
+        public string Visit(MinusExpression exp)
         {
-            return checked((dynamic)exp.Op0.Accept(this) - exp.Op1.Accept(this));
+            return "(" + exp.Op0.Accept(this) + "-" + exp.Op1.Accept(this) + ")";
         }
 
-        public T Visit(MultiplyExpression exp)
+        public string Visit(MultiplyExpression exp)
         {
-            return checked((dynamic)exp.Op0.Accept(this) * exp.Op1.Accept(this));
+            return "(" + exp.Op0.Accept(this) + "*" + exp.Op1.Accept(this) + ")";
         }
 
-        public T Visit(DivideExpression exp)
+        public string Visit(DivideExpression exp)
         {
-            return checked((dynamic)exp.Op0.Accept(this) / exp.Op1.Accept(this));
+            return "(" + exp.Op0.Accept(this) + "/" + exp.Op1.Accept(this) + ")";
+        }
+    }
+
+    class SmartParenthesesVisitor : IVisitor<StringBuilder> {
+
+        StringBuilder sb;
+
+        public SmartParenthesesVisitor()
+        {
+            sb = new StringBuilder();
+        }
+
+        public override string ToString()
+        {
+            return sb.ToString();
+        }
+
+        int precedence(Expression expr)
+        {
+            if (expr.GetType() == typeof(ConstantExpression))
+                return 128;
+            if (expr.GetType() == typeof(UnaryMinusExpression))
+                return 64;
+            else if (expr.GetType() == typeof(PlusExpression))
+                return 16;
+            else if (expr.GetType() == typeof(MinusExpression))
+                return 16;
+            else if (expr.GetType() == typeof(MultiplyExpression))
+                return 32;
+            else if (expr.GetType() == typeof(DivideExpression))
+                return 32;
+
+            throw new ArgumentException("Unknown class.");
+        }
+
+        bool isAsociative(Expression expr)
+        {
+            if (expr.GetType() == typeof(MinusExpression))
+                return false;
+            else if (expr.GetType() == typeof(DivideExpression))
+                return false;
+
+            return true;
+        }
+
+        StringBuilder unaryAppender(Expression parent, Expression sub, String operation)
+        {
+            sb.Append(operation);
+
+            int sbLength = sb.Length;
+
+            if (sub.GetType() != typeof(ConstantExpression)
+                && sub.GetType() != typeof(UnaryMinusExpression))
+                parent.Accept(this).Insert(sbLength, "(").Append(")");
+            else
+                parent.Accept(this);
+
+            return sb;
+        }
+
+        StringBuilder binaryAppender(Expression parent, Expression left, Expression right, String operation)
+        {
+            int sbLength = sb.Length;
+
+            if (precedence(left) < precedence(parent))
+                left.Accept(this).Insert(sbLength, "(").Append(")");
+            else
+                left.Accept(this);
+
+            sb.Append(operation);
+
+            sbLength = sb.Length;
+
+            if ((precedence(right) < precedence(parent)) || (precedence(right) == precedence(parent) && !isAsociative(parent)))
+                right.Accept(this).Insert(sbLength, "(").Append(")");
+            else
+                right.Accept(this);
+            
+            return sb;
+        }
+
+        public StringBuilder Visit(ConstantExpression exp)
+        {
+            return sb.Append(exp.Value.ToString());
+        }
+
+        public StringBuilder Visit(UnaryMinusExpression exp)
+        {
+            return unaryAppender(exp, exp.Op, "-");
+        }
+
+        public StringBuilder Visit(PlusExpression exp)
+        {
+            return binaryAppender(exp, exp.Op0, exp.Op1, "+");
+        }
+
+        public StringBuilder Visit(MinusExpression exp)
+        {
+            return binaryAppender(exp, exp.Op0, exp.Op1, "-");
+        }
+
+        public StringBuilder Visit(MultiplyExpression exp)
+        {
+            return binaryAppender(exp, exp.Op0, exp.Op1, "*");
+        }
+
+        public StringBuilder Visit(DivideExpression exp)
+        {
+            return binaryAppender(exp, exp.Op0, exp.Op1, "/");
         }
     }
 
@@ -322,6 +432,12 @@ namespace ExpressionEvaluator {
                 if (ln.Length == 0)
                     continue;
 
+                if (expr == null && (ln == "i" || ln == "d" || ln == "p" || ln == "P"))
+                {
+                    Console.WriteLine("Expression Missing");
+                    continue;
+                }
+
                 try
                 {
                     if (ln[0] == '=')
@@ -336,29 +452,28 @@ namespace ExpressionEvaluator {
 
                     if (ln == "i")
                     {
-                        if (expr == null)
-                        {
-                            Console.WriteLine("Expression Missing");
-                            continue;
-                        }
-
                         Console.WriteLine(expr.Evaluate());
                         continue;
                     }
 
                     if (ln == "d")
                     {
-                        if (expr == null)
-                        {
-                            Console.WriteLine("Expression Missing");
-                            continue;
-                        }
+                        Console.WriteLine(String.Format("{0:F5}", expr.Accept<double>(new DoubleVisitor())));
+                        continue;
+                    }
 
-                        if (expr == null) { Console.WriteLine("Expression Missing"); continue; }
+                    if (ln == "p")
+                    {
+                        Console.WriteLine(expr.Accept<string>(new ParenthesesVisitor()));
+                        continue;
+                    }
 
-                        var visitorDouble = new GenericVisitor<double>();
+                    if (ln == "P")
+                    {
+                        var visitorSmartParentheses = new SmartParenthesesVisitor();
+                        expr.Accept<StringBuilder>(visitorSmartParentheses);
 
-                        Console.WriteLine(String.Format("{0:F5}", expr.Accept<double>(visitorDouble)));
+                        Console.WriteLine(visitorSmartParentheses.ToString());
                         continue;
                     }
 
@@ -367,9 +482,7 @@ namespace ExpressionEvaluator {
                 }
                 catch (DivideByZeroException) { Console.WriteLine("Divide Error"); }
                 catch (OverflowException) { Console.WriteLine("Overflow Error"); }
-
             }
-
         }
     }
 }
