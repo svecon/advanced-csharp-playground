@@ -361,11 +361,9 @@ namespace ExpressionEvaluator {
 
             if (sub.GetType() != typeof(ConstantExpression)
                 && sub.GetType() != typeof(UnaryMinusExpression))
-                parent.Accept(this).Insert(sbLength, "(").Append(")");
+                return sub.Accept(this).Insert(sbLength, "(").Append(")");
             else
-                parent.Accept(this);
-
-            return sb;
+                return sub.Accept(this);
         }
 
         StringBuilder binaryAppender(Expression parent, Expression left, Expression right, String operation)
@@ -382,11 +380,9 @@ namespace ExpressionEvaluator {
             sbLength = sb.Length;
 
             if ((precedence(right) < precedence(parent)) || (precedence(right) == precedence(parent) && !isAsociative(parent)))
-                right.Accept(this).Insert(sbLength, "(").Append(")");
+                return right.Accept(this).Insert(sbLength, "(").Append(")");
             else
-                right.Accept(this);
-            
-            return sb;
+                return right.Accept(this);
         }
 
         public StringBuilder Visit(ConstantExpression exp)

@@ -51,7 +51,7 @@ namespace Excel {
                     (c == '/');
         }
 
-        public static bool IsBlank(char c)
+        public static bool IsBlank(this char c)
         {
             return
                     (c == ' ') ||
@@ -405,7 +405,7 @@ namespace Excel {
                     {
                         addCell(ref c, ref buffer, ref bufferUsed);
 
-                        while (i + 1 < ln.Length && !Helper.IsBlank(ln[i + 1])) { i++; }
+                        while (i + 1 < ln.Length && !ln[i + 1].IsBlank()) { i++; }
                         continue;
                     }
 
