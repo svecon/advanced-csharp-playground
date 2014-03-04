@@ -107,14 +107,15 @@ namespace ParallelMergeSort {
             // merge all other pieces with the first one
             for (int i = 1; i < nThreads; i++)
             {
-                merge(ref array, temp,
+                merge(array, temp,
                     pieces[0].From, pieces[0].Length,
                     pieces[i].From, pieces[i].Length
                 );
+                pieces[0].Length += pieces[i].Length;
             }
         }
 
-        void merge(ref T[] array, T[] temp, int left, int leftLength, int right, int rightLength)
+        void merge(T[] array, T[] temp, int left, int leftLength, int right, int rightLength)
         {
             int leftIndex = left;
             int rightIndex = right;
@@ -131,7 +132,8 @@ namespace ParallelMergeSort {
             while (rightIndex < right + rightLength)
                 temp[tempIndex++] = array[rightIndex++];
 
-            array = temp;
+            for (int i = left; i < right + rightLength; i++)
+                array[i] = temp[i];
         }
 
     }
