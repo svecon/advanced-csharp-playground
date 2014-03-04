@@ -110,7 +110,7 @@ namespace ParallelMergeSort {
             while (pieces.Count > 1)
             {
                 int curr = 0;
-                while (curr < pieces.Count)
+                while (curr < pieces.Count - 1)
                 {
                     merge(array, temp,
                         pieces[curr].From, pieces[curr].Length,
