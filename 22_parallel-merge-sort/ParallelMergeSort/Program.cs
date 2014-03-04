@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
+using System.Diagnostics;
 
 /*
 
@@ -83,15 +84,15 @@ namespace ParallelMergeSort {
             Thread[] threads = new Thread[nThreads];
             threads[0] = Thread.CurrentThread;
 
-            PieceOfArray[] pieces = new PieceOfArray[nThreads];
-            pieces[0] = new PieceOfArray(array, 0, howManyItemsPerThread);
+            List<PieceOfArray> pieces = new List<PieceOfArray>(nThreads);
+            pieces.Add(new PieceOfArray(array, 0, howManyItemsPerThread));
 
             // creating more Threads
             for (int i = 1; i < nThreads; i++)
             {
-                pieces[i] = new PieceOfArray(array, i * howManyItemsPerThread,
+                pieces.Add(new PieceOfArray(array, i * howManyItemsPerThread,
                     i == nThreads - 1 ? array.Length - i * howManyItemsPerThread : howManyItemsPerThread
-                );
+                ));
                 threads[i] = new Thread(pieces[i].Start);
                 threads[i].Start();
             }
@@ -104,15 +105,32 @@ namespace ParallelMergeSort {
 
             T[] temp = new T[array.Length];
 
-            // merge all other pieces with the first one
-            for (int i = 1; i < nThreads; i++)
+            // merge two consecutive pieces until there is just one remaining
+            // [less operations then merging everything with the first piece -> around 11% less for 4 pieces]
+            while (pieces.Count > 1)
             {
-                merge(array, temp,
-                    pieces[0].From, pieces[0].Length,
-                    pieces[i].From, pieces[i].Length
-                );
-                pieces[0].Length += pieces[i].Length;
+                int curr = 0;
+                while (curr < pieces.Count)
+                {
+                    merge(array, temp,
+                        pieces[curr].From, pieces[curr].Length,
+                        pieces[curr + 1].From, pieces[curr + 1].Length
+                    );
+                    pieces[curr].Length += pieces[curr + 1].Length;
+                    pieces.RemoveAt(curr + 1);
+                    curr++;
+                }
             }
+
+            // merge all other pieces with the first one [more operations]
+            //for (int i = 1; i < nThreads; i++)
+            //{
+            //    merge(array, temp,
+            //        pieces[0].From, pieces[0].Length,
+            //        pieces[i].From, pieces[i].Length
+            //    );
+            //    pieces[0].Length += pieces[i].Length;
+            //}
         }
 
         void merge(T[] array, T[] temp, int left, int leftLength, int right, int rightLength)
@@ -172,7 +190,8 @@ namespace ParallelMergeSort {
             int[] array = ReadInput(input);
 
 #if DEBUG
-            var stopwatch = new System.Diagnostics.Stopwatch();
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            var stopwatch = new Stopwatch();
             stopwatch.Start();
 #endif
 
@@ -182,10 +201,19 @@ namespace ParallelMergeSort {
 
 #if DEBUG
             stopwatch.Stop();
-            Console.WriteLine("Time elapsed: {0}ms", stopwatch.ElapsedMilliseconds);
+            Debug.WriteLine("Time elapsed: {0}ms", stopwatch.ElapsedMilliseconds);
 #endif
 
             WriteOutput(array, output);
+        }
+
+        static void generateFileWithRandomNumbers(string filename, int count)
+        {
+            var r = new Random();
+            var o = new StreamWriter(File.Create(filename));
+
+            for (int i = 0; i < count; i++)
+                o.WriteLine(r.Next());
         }
 
         static void Main(string[] args)
