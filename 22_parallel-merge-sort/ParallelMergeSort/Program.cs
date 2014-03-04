@@ -214,6 +214,8 @@ namespace ParallelMergeSort {
 
             for (int i = 0; i < count; i++)
                 o.WriteLine(r.Next());
+
+            o.Close();
         }
 
         static void Main(string[] args)
