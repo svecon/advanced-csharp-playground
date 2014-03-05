@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelMergeSort", "ParallelMergeSort\ParallelMergeSort.csproj", "{91282494-7093-46FE-B0F2-F632E463E013}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelMergeSortTests", "ParallelMergeSortTests\ParallelMergeSortTests.csproj", "{12E1A909-2D18-4134-B84B-13C8035A55FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{91282494-7093-46FE-B0F2-F632E463E013}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91282494-7093-46FE-B0F2-F632E463E013}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91282494-7093-46FE-B0F2-F632E463E013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12E1A909-2D18-4134-B84B-13C8035A55FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12E1A909-2D18-4134-B84B-13C8035A55FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12E1A909-2D18-4134-B84B-13C8035A55FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12E1A909-2D18-4134-B84B-13C8035A55FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

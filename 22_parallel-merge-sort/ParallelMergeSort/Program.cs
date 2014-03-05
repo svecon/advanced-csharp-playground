@@ -38,9 +38,12 @@ std. výstup
     9
     10
 */
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ParaMergeTests")]
+
 namespace ParallelMergeSort {
 
-    class ParallelMergeSort<T> where T : IComparable<T> {
+    public class ParallelMergeSort<T> where T : IComparable<T> {
 
         private class PieceOfArray {
 
@@ -69,17 +72,17 @@ namespace ParallelMergeSort {
             this.array = array;
         }
 
-        public void Sort(int nThreads = 2)
+        public T[] Sort(int nThreads = 2)
         {
             if (nThreads < 1)
                 throw new ArgumentOutOfRangeException("At least 1 thread is needed to proceed.");
 
             int howManyItemsPerThread = array.Length / nThreads;
             if (howManyItemsPerThread <= 0)
-                return;
+                return array;
 
             if (array.Length < 2 * nThreads)
-                nThreads = 1; // not enough items for more threads
+                nThreads = 1; // Not enough items for more threads
 
             Thread[] threads = new Thread[nThreads];
             threads[0] = Thread.CurrentThread;
@@ -87,7 +90,7 @@ namespace ParallelMergeSort {
             List<PieceOfArray> pieces = new List<PieceOfArray>(nThreads);
             pieces.Add(new PieceOfArray(array, 0, howManyItemsPerThread));
 
-            // creating more Threads
+            // Creating more Threads
             for (int i = 1; i < nThreads; i++)
             {
                 pieces.Add(new PieceOfArray(array, i * howManyItemsPerThread,
@@ -97,7 +100,7 @@ namespace ParallelMergeSort {
                 threads[i].Start();
             }
 
-            // run first piece with default Thread
+            // Run first piece with default Thread
             pieces[0].Start();
 
             for (int i = 1; i < nThreads; i++)
@@ -105,7 +108,7 @@ namespace ParallelMergeSort {
 
             T[] temp = new T[array.Length];
 
-            // merge two consecutive pieces until there is just one remaining
+            // Merge two consecutive pieces until there is just one remaining
             // [less operations then merging everything with the first piece -> around 11% less for 4 pieces]
             while (pieces.Count > 1)
             {
@@ -120,9 +123,14 @@ namespace ParallelMergeSort {
                     pieces.RemoveAt(curr + 1);
                     curr++;
                 }
+                
+                // Swap array pointers to simulate copying
+                T[] tempPointer = array;
+                array = temp;
+                temp = tempPointer;
             }
 
-            // merge all other pieces with the first one [more operations]
+            // Merge all other pieces with the first one [more operations]
             //for (int i = 1; i < nThreads; i++)
             //{
             //    merge(array, temp,
@@ -131,6 +139,8 @@ namespace ParallelMergeSort {
             //    );
             //    pieces[0].Length += pieces[i].Length;
             //}
+
+            return array;
         }
 
         void merge(T[] array, T[] temp, int left, int leftLength, int right, int rightLength)
@@ -150,13 +160,14 @@ namespace ParallelMergeSort {
             while (rightIndex < right + rightLength)
                 temp[tempIndex++] = array[rightIndex++];
 
-            for (int i = left; i < right + rightLength; i++)
-                array[i] = temp[i];
+            // Can use this instead of array swapping [but slower]
+            //for (int i = left; i < right + rightLength; i++)
+            //    array[i] = temp[i];
         }
 
     }
 
-    class Program {
+    public class Program {
 
         static int[] ReadInput(TextReader input)
         {
@@ -175,7 +186,7 @@ namespace ParallelMergeSort {
                 output.WriteLine(array[i]);
         }
 
-        static void Run(string[] args, TextReader input, TextWriter output)
+        public static void Run(string[] args, TextReader input, TextWriter output)
         {
             if (args.Length != 1)
                 throw new ArgumentException();
@@ -189,20 +200,20 @@ namespace ParallelMergeSort {
 
             int[] array = ReadInput(input);
 
-#if DEBUG
+//#if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-#endif
+//#endif
 
             // actual sorting
             var parallelMergeSort = new ParallelMergeSort<int>(array);
-            parallelMergeSort.Sort(nThreads);
+            array = parallelMergeSort.Sort(nThreads);
 
-#if DEBUG
+//#if DEBUG
             stopwatch.Stop();
-            Debug.WriteLine("Time elapsed: {0}ms", stopwatch.ElapsedMilliseconds);
-#endif
+            Console.WriteLine("Time elapsed: {0}ms", stopwatch.ElapsedMilliseconds);
+//#endif
 
             WriteOutput(array, output);
         }
