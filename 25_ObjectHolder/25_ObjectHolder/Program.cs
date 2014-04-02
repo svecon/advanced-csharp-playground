@@ -33,15 +33,26 @@ namespace ObjectHolder {
         {
             if (Interlocked.CompareExchange(ref first, obj, null) == null) return;
 
-            lock (typeof(SecretQueue))
+            if (first.GetType() == typeof(SecretQueue))
             {
-                if (first.GetType() != typeof(SecretQueue))
-                {
-                    first = new SecretQueue(first, obj);
-                }
-                else
+                lock (first)
                 {
                     ((SecretQueue)first).data.AddLast(obj);
+                }
+            }
+            else
+            {
+                var local = first;
+
+                var localQueue = new SecretQueue(first, obj);
+
+                if (Interlocked.CompareExchange(ref first, localQueue, local) != localQueue) {
+
+                    lock (first)
+                    {
+                        ((SecretQueue)first).data.AddLast(obj);
+                    }
+                
                 }
 
             }
@@ -50,6 +61,9 @@ namespace ObjectHolder {
         public object GetFirstObject()
         {
             Object local = first;
+
+            if (local == null)
+                return null;
 
             if (local.GetType() != typeof(SecretQueue))
                 return first;
