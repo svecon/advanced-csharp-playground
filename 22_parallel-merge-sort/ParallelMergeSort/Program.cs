@@ -200,20 +200,9 @@ namespace ParallelMergeSort {
 
             int[] array = ReadInput(input);
 
-//#if DEBUG
-            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-//#endif
-
             // actual sorting
             var parallelMergeSort = new ParallelMergeSort<int>(array);
             array = parallelMergeSort.Sort(nThreads);
-
-//#if DEBUG
-            stopwatch.Stop();
-            Console.WriteLine("Time elapsed: {0}ms", stopwatch.ElapsedMilliseconds);
-//#endif
 
             WriteOutput(array, output);
         }
