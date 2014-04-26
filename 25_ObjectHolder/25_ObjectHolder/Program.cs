@@ -8,21 +8,22 @@ using System.Collections.Concurrent;
 namespace ObjectHolder {
     class ThreadSafeObjectHolder {
 
-        Object first;
+        Object holder;
 
         private class SecretQueue {
 
             public LinkedList<Object> data;
+
             public SecretQueue()
             {
                 data = new LinkedList<Object>();
             }
 
-            public SecretQueue(object f1, object f2)
+            public SecretQueue(object o1, object o2)
             {
                 data = new LinkedList<Object>();
-                data.AddLast(f1);
-                data.AddLast(f2);
+                data.AddLast(o1);
+                data.AddLast(o2);
             }
 
         }
@@ -31,42 +32,44 @@ namespace ObjectHolder {
 
         public void AddObject(object obj)
         {
-            if (Interlocked.CompareExchange(ref first, obj, null) == null) return;
+            // holder was null => asign obj to holder => end
+            if (Interlocked.CompareExchange(ref holder, obj, null) == null) return;
 
-            if (first.GetType() == typeof(SecretQueue))
-            {
-                lock (first)
+            // holder is SecretQueue or other object
+            Object local = holder;
+
+            if (holder.GetType() == typeof(SecretQueue))
+            { // holder is already a SecretQueue
+                lock (holder)
                 {
-                    ((SecretQueue)first).data.AddLast(obj);
+                    ((SecretQueue)holder).data.AddLast(obj);
+                    return;
                 }
             }
             else
             {
-                var local = first;
+                // there is a chance that holder is not yet a SecretQueue => create one and try atomic exchange
+                var localQueue = new SecretQueue(holder, obj);
 
-                var localQueue = new SecretQueue(first, obj);
-
-                if (Interlocked.CompareExchange(ref first, localQueue, local) != localQueue) {
-
-                    lock (first)
+                if (Interlocked.CompareExchange(ref holder, localQueue, local) != localQueue)
+                { // holder != local => holder changed and is already a SecretQueue
+                    lock (holder)
                     {
-                        ((SecretQueue)first).data.AddLast(obj);
+                        ((SecretQueue)holder).data.AddLast(obj);
                     }
-                
                 }
-
             }
         }
 
         public object GetFirstObject()
         {
-            Object local = first;
+            Object local = holder;
 
             if (local == null)
                 return null;
 
             if (local.GetType() != typeof(SecretQueue))
-                return first;
+                return holder;
 
             return ((SecretQueue)local).data.First;
         }
