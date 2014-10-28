@@ -1,0 +1,22 @@
+﻿<Window x:Class="Chat.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      Title="ChatApp"
+                      Height="480"
+                      Width="640"
+                      WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Button x:Name="startServer" Content="Server" Margin="10,10,0,0" VerticalAlignment="Top"  VerticalContentAlignment="Center" Width="100" HorizontalAlignment="Left" Click="startServer_Click" Height="24" FontSize="13" />
+        <Button x:Name="startClient" Content="Connect" Margin="0,10,10,0" Width="100" VerticalAlignment="Top"  VerticalContentAlignment="Center" HorizontalAlignment="Right" Click="startClient_Click" Height="24" FontSize="13"/>
+        <TextBox x:Name="connectAddress" HorizontalAlignment="Right" Height="24" Margin="0,10,115,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top"  VerticalContentAlignment="Center" Width="150" FontSize="13"/>
+        <Button x:Name="sendMessage" Content="Send message" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom"  VerticalContentAlignment="Center" Width="100" Height="57" Click="sendMessage_Click" IsEnabled="False"/>
+        <Label x:Name="usernameLabel" Content="Username" HorizontalAlignment="Left" Margin="10,0,0,41" VerticalAlignment="Bottom"  VerticalContentAlignment="Center" Height="24" FontSize="13"/>
+        <TextBox x:Name="username" HorizontalAlignment="Left" Margin="78,0,0,41" TextWrapping="Wrap" VerticalAlignment="Bottom"  VerticalContentAlignment="Center" Width="120" Text="Anonymous" Height="24" FontSize="13" TextChanged="username_TextChanged"/>
+        <TextBox x:Name="messageToSend" Margin="10,0,115,10" TextWrapping="Wrap" Text="" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Height="24" FontSize="13" TextChanged="messageToSend_TextChanged" KeyDown="messageToSend_KeyDown">
+            <TextBox.InputBindings>
+                <KeyBinding Command="{Binding Path=Window.}" Key="Enter" />
+            </TextBox.InputBindings>
+        </TextBox>
+        <RichTextBox x:Name="texts" Margin="10,41,10,72" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+    </Grid>
+</Window>
